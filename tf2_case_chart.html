@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TF2 Case Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+    color: #e8e0d0;
+    padding: 32px 24px 48px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c8b89a;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #7a7060;
+    margin-bottom: 40px;
+    letter-spacing: 0.03em;
+  }
+
+  #loading {
+    color: #7a7060;
+    font-size: 14px;
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .chart-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+    height: 360px;
+    padding-bottom: 0;
+  }
+
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .bar-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #c8b89a;
+    letter-spacing: 0.04em;
+  }
+
+  .bar-outer {
+    width: 100%;
+    position: relative;
+    border-radius: 3px 3px 0 0;
+    overflow: hidden;
+    transition: height 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    min-width: 48px;
+  }
+
+  .bar-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(180deg, #8b3a3a 0%, #5c1f1f 100%);
+    position: relative;
+  }
+
+  .bar-fill.blue {
+    background: linear-gradient(180deg, #3a5c8b 0%, #1f3a5c 100%);
+  }
+
+  .bar-img {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 56px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    pointer-events: none;
+  }
+
+  .bar-label {
+    font-size: 11px;
+    color: #7a7060;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    width: 100%;
+    word-break: break-word;
+    padding: 0 2px;
+  }
+
+  .baseline {
+    width: 100%;
+    height: 1px;
+    background: #3a3530;
+    margin-top: 4px;
+  }
+
+  .error {
+    color: #8b3a3a;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Case Inventory Estimates</h1>
+<p class="subtitle">Projected quantities — updates automatically</p>
+
+<div id="loading">Loading data...</div>
+<div id="chart-container" style="display:none">
+  <div class="chart-wrap" id="chart"></div>
+  <div class="baseline"></div>
+</div>
+<div id="error" class="error" style="display:none"></div>
+
+<script>
+  // -------------------------------------------------------
+  // CONFIGURATION — replace with your actual values
+  // -------------------------------------------------------
+  const SHEET_ID = "18CT-UwDRk97PFo6Hc0MTRuQ-eyj75Uvmtep-jre4s8g";
+  const SHEET_NAME = "Final Estimates"; // tab name
+  const API_KEY = "AIzaSyBF2ACncBwseS6BrTxU4HfXi-Apmh613mU";
+  // -------------------------------------------------------
+
+  // Case image URLs from TF2 wiki (add/edit as needed)
+  const CASE_IMAGES = {
+    "Gargoyle Case": "Gargoyle_Case.png",
+    "Tough Break Cosmetic Case": "Tough_Break_Cosmetic_Case.png",
+    "Creepy Crawly Case": "Creepy_Crawly_Case.png",
+    "Blue Moon Cosmetic Case": "Blue_Moon_Cosmetic_Case.png",
+    "Quarantined Collection Case": "Quarantined_Collection_Case.png",
+    "Rainy Day Cosmetic Case": "Rainy_Day_Cosmetic_Case.png",
+  };
+
+  // Alternate between red and blue bars
+  const COLORS = ["red", "blue", "red", "blue", "red", "blue"];
+
+  async function loadData() {
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A:B?key=${API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const rows = (json.values || []).slice(1).filter(r => r[0] && r[1] && isNaN(Number(r[0])));
+      if (!rows.length) throw new Error("No data found in sheet.");
+      renderChart(rows);
+    } catch (e) {
+      document.getElementById("loading").style.display = "none";
+      const err = document.getElementById("error");
+      err.style.display = "block";
+      err.textContent = "Could not load data: " + e.message;
+    }
+  }
+
+  function renderChart(rows) {
+    const values = rows.map(r => parseFloat(r[1]) || 0);
+    const maxVal = Math.max(...values);
+
+    const chart = document.getElementById("chart");
+    chart.innerHTML = "";
+
+    rows.forEach((row, i) => {
+      const name = row[0];
+      const val = parseFloat(row[1]) || 0;
+      const heightPct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+      const imgSrc = CASE_IMAGES[name] || "";
+
+      const col = document.createElement("div");
+      col.className = "bar-col";
+
+      const valLabel = document.createElement("div");
+      valLabel.className = "bar-value";
+      valLabel.textContent = val.toLocaleString();
+
+      const barOuter = document.createElement("div");
+      barOuter.className = "bar-outer";
+      barOuter.style.height = heightPct + "%";
+
+      const barFill = document.createElement("div");
+      barFill.className = "bar-fill" + (COLORS[i % COLORS.length] === "blue" ? " blue" : "");
+
+      if (imgSrc) {
+        const img = document.createElement("img");
+        img.className = "bar-img";
+        img.src = imgSrc;
+        img.alt = name;
+        barFill.appendChild(img);
+      }
+
+      barOuter.appendChild(barFill);
+
+      const label = document.createElement("div");
+      label.className = "bar-label";
+      label.textContent = name;
+
+      col.appendChild(valLabel);
+      col.appendChild(barOuter);
+      col.appendChild(label);
+      chart.appendChild(col);
+    });
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("chart-container").style.display = "block";
+  }
+
+  loadData();
+</script>
+</body>
+</html>
