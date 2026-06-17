@@ -141,11 +141,9 @@
 
 <script>
   // -------------------------------------------------------
-  // CONFIGURATION — replace with your actual values
+  // CONFIGURATION
   // -------------------------------------------------------
-  const SHEET_ID = "18CT-UwDRk97PFo6Hc0MTRuQ-eyj75Uvmtep-jre4s8g";
-  const SHEET_NAME = "Final Estimates"; // tab name
-  const API_KEY = "AIzaSyBF2ACncBwseS6BrTxU4HfXi-Apmh613mU";
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPYhMKeg6Abyva-EmtkHT-xwrRxmfwAbHpaKiBvAi7dRJuQI9jPES7PkEKGI_3DwLP-nihP4KRxS9Q/pub?gid=1949250487&single=true&output=csv";
   // -------------------------------------------------------
 
   // Case image URLs from TF2 wiki (add/edit as needed)
@@ -164,29 +162,15 @@
 
   async function loadData() {
     try {
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A:B?key=${API_KEY}`;
-      const res = await fetch(url);
+      const res = await fetch(CSV_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      const rows = (json.values || []).slice(1).filter(r => r[0] && r[1] && isNaN(Number(r[0])));
-      if (!rows.length) throw new Error("No data found in sheet.");
+      const text = await res.text();
+      const rows = text.trim().split("\n").slice(1).map(line => line.split(",")).filter(r => r[0] && r[1]);
+      if (!rows.length) throw new Error("No data found.");
 
-      // Fetch last modified time
-      try {
-        const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?key=${API_KEY}&fields=properties`);
-        const metaJson = await metaRes.json();
-        const driveRes = await fetch(`https://www.googleapis.com/drive/v3/files/${SHEET_ID}?key=${API_KEY}&fields=modifiedTime`);
-        const driveJson = await driveRes.json();
-        if (driveJson.modifiedTime) {
-          const d = new Date(driveJson.modifiedTime);
-          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-          document.getElementById("last-updated").textContent = `Last updated: ${formatted}`;
-        } else {
-          document.getElementById("last-updated").textContent = "Updated automatically";
-        }
-      } catch {
-        document.getElementById("last-updated").textContent = "Updated automatically";
-      }
+      const now = new Date();
+      const formatted = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("last-updated").textContent = `Last updated: ${formatted}`;
 
       renderChart(rows);
     } catch (e) {
