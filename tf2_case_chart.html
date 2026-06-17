@@ -93,8 +93,8 @@
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 80%;
-    max-width: 56px;
+    width: 90%;
+    max-width: 120px;
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
@@ -129,8 +129,8 @@
 </head>
 <body>
 
-<h1>Case Inventory Estimates</h1>
-<p class="subtitle">Projected quantities — updates automatically</p>
+<h1>Cases Unboxed Last Month</h1>
+<p class="subtitle" id="last-updated">Loading...</p>
 
 <div id="loading">Loading data...</div>
 <div id="chart-container" style="display:none">
@@ -150,12 +150,13 @@
 
   // Case image URLs from TF2 wiki (add/edit as needed)
   const CASE_IMAGES = {
-    "abacus": "Gargoyle_Case.png",
-    "banana": "Tough_Break_Cosmetic_Case.png",
-    "clementine": "Creepy_Crawly_Case.png",
-    "daddario": "Blue_Moon_Cosmetic_Case.png",
-    "elizabeth": "Quarantined_Collection_Case.png",
-    "fitzgerald": "Rainy_Day_Cosmetic_Case.png",
+    "Quarantined Collection": "Quarantined_Collection_Case.png",
+    "Confidential Collection": "Confidential_Collection.png",
+    "Gargoyle Case": "Gargoyle_Case.png",
+    "Creepy Crawly Case": "Creepy_Crawly_Case.png",
+    "Gun Mettle Cosmetic Case": "Gun_Mettle_Cosmetic_Case.png",
+    "Warbird Weapons Case": "Warbird_Weapons_Case.png",
+    "Pyroland Weapons Case": "Pyroland_Weapons_Case.png",
   };
 
   // Alternate between red and blue bars
@@ -169,6 +170,24 @@
       const json = await res.json();
       const rows = (json.values || []).slice(1).filter(r => r[0] && r[1] && isNaN(Number(r[0])));
       if (!rows.length) throw new Error("No data found in sheet.");
+
+      // Fetch last modified time
+      try {
+        const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?key=${API_KEY}&fields=properties`);
+        const metaJson = await metaRes.json();
+        const driveRes = await fetch(`https://www.googleapis.com/drive/v3/files/${SHEET_ID}?key=${API_KEY}&fields=modifiedTime`);
+        const driveJson = await driveRes.json();
+        if (driveJson.modifiedTime) {
+          const d = new Date(driveJson.modifiedTime);
+          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+          document.getElementById("last-updated").textContent = `Last updated: ${formatted}`;
+        } else {
+          document.getElementById("last-updated").textContent = "Updated automatically";
+        }
+      } catch {
+        document.getElementById("last-updated").textContent = "Updated automatically";
+      }
+
       renderChart(rows);
     } catch (e) {
       document.getElementById("loading").style.display = "none";
