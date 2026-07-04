@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TF2 Case Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+    color: #e8e0d0;
+    padding: 32px 24px 48px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c8b89a;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #7a7060;
+    margin-bottom: 40px;
+    letter-spacing: 0.03em;
+    text-align: center;
+  }
+
+  #loading {
+    color: #7a7060;
+    font-size: 14px;
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .chart-container-inner {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .chart-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-evenly;
+    gap: 4px;
+    width: 100%;
+    padding: 80px 100px 0 4px;
+    height: 420px;
+  }
+
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    max-width: 28px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .bar-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c8b89a;
+    letter-spacing: 0.02em;
+    text-align: center;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+
+  .bar-img-wrap {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 1;
+    margin-bottom: 3px;
+  }
+
+  .bar-img-wrap img {
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+  }
+
+  .bar-outer {
+    width: 14px;
+    position: relative;
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    flex-shrink: 1;
+  }
+
+  .bar-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px 2px 0 0;
+    background: linear-gradient(180deg, #8b3a3a 0%, #5c1f1f 100%);
+  }
+
+  .bar-fill.blue {
+    background: linear-gradient(180deg, #3a5c8b 0%, #1f3a5c 100%);
+  }
+
+  .bar-label-wrap {
+    width: 14px;
+    height: 110px;
+    overflow: visible;
+    position: relative;
+    flex-shrink: 1;
+    margin-top: 14px;
+  }
+
+  .bar-label {
+    font-size: 10px;
+    color: #7a7060;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform-origin: top left;
+    transform: rotate(45deg) translateX(-14px);
+  }
+
+  .baseline {
+    width: 100%;
+    height: 1px;
+    background: #3a3530;
+    margin-top: 4px;
+  }
+
+  .error {
+    color: #8b3a3a;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Cases Unboxed Last Month</h1>
+<p class="subtitle" id="last-updated">Loading...</p>
+
+<div id="loading">Loading data...</div>
+<div id="chart-container" style="display:none">
+  <div class="chart-container-inner">
+    <div class="chart-wrap" id="chart"></div>
+    <div class="baseline"></div>
+  </div>
+</div>
+<div id="error" class="error" style="display:none"></div>
+
+<script>
+  // -------------------------------------------------------
+  // CONFIGURATION
+  // -------------------------------------------------------
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPYhMKeg6Abyva-EmtkHT-xwrRxmfwAbHpaKiBvAi7dRJuQI9jPES7PkEKGI_3DwLP-nihP4KRxS9Q/pub?gid=1949250487&single=true&output=csv";
+  // -------------------------------------------------------
+
+  // Case image URLs from TF2 wiki (add/edit as needed)
+  const CASE_IMAGES = {
+    "Spectral Stash Case": "Spectral_Stash_Case.png",
+    "Summer 2025 Cosmetic Case": "Summer_2025_Cosmetic_Case.png",
+    "Winter 2024 Cosmetic Case": "Winter_2024_Cosmetic_Case.png",
+    "Terrifying Trove Case": "Terrifying_Trove_Case.png",
+    "Summer 2024 Cosmetic Case": "Summer_2024_Cosmetic_Case.png",
+    "Winter 2023 Cosmetic Case": "Winter_2023_Cosmetic_Case.png",
+    "Bone-Chilling Bonanza Case": "Bone-Chilling_Bonanza_Case.png",
+    "Summer 2023 Cosmetic Case": "Summer_2023_Cosmetic_Case.png",
+    "Winter 2022 Cosmetic Case": "Winter_2022_Cosmetic_Case.png",
+    "Ghoulish Gains Case": "Ghoulish_Gains_Case.png",
+    "Summer 2022 Cosmetic Case": "Summer_2022_Cosmetic_Case.png",
+    "Winter 2021 Cosmetic Case": "Winter_2021_Cosmetic_Case.png",
+    "Crimson Cache Case": "Crimson_Cache_Case.png",
+    "Summer 2021 Cosmetic Case": "Summer_2021_Cosmetic_Case.png",
+    "Winter 2020 Cosmetic Case": "Winter_2020_Cosmetic_Case.png",
+    "Wicked Windfall Case": "Wicked_Windfall_Case.png",
+    "Summer 2020 Cosmetic Case": "Summer_2020_Cosmetic_Case.png",
+    "Winter 2019 Cosmetic Case": "Winter_2019_Cosmetic_Case.png",
+    "Spooky Spoils Case": "Spooky_Spoils_Case.png",
+    "Summer 2019 Cosmetic Case": "Summer_2019_Cosmetic_Case.png",
+    "Winter 2018 Cosmetic Case": "Winter_2018_Cosmetic_Case.png",
+    "Violet Vermin Case": "Violet_Vermin_Case.png",
+    "Blue Moon Cosmetic Case": "Blue_Moon_Cosmetic_Case.png",
+    "Winter 2017 Cosmetic Case": "Winter_2017_Cosmetic_Case.png",
+    "Unleash the Beast Cosmetic Case": "Unleash_the_Beast_Cosmetic_Case.png",
+    "Abominable Cosmetic Case": "Abominable_Cosmetic_Case.png",
+    "Rainy Day Cosmetic Case": "Rainy_Day_Cosmetic_Case.png",
+    "Creepy Crawly Case": "Creepy_Crawly_Case.png",
+    "Mayflower Cosmetic Case": "Mayflower_Cosmetic_Case.png",
+    "Tough Break Cosmetic Case": "Tough_Break_Cosmetic_Case.png",
+    "Gargoyle Case": "Gargoyle_Case.png",
+    "Confidential Collection Case": "Confidential_Collection_Case.png",
+    "Quarantined Collection Case": "Quarantined_Collection_Case.png",
+    "Gun Mettle Cosmetic Case": "Gun_Mettle_Cosmetic_Case.png",
+  };
+
+  // Alternate between red and blue bars
+  const COLORS = ["red", "blue", "red", "blue", "red", "blue"];
+
+  async function loadData() {
+    try {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      const rows = text.trim().split("\n").slice(1).map(line => line.split(",")).filter(r => r[0] && r[1]);
+      if (!rows.length) throw new Error("No data found.");
+
+      const now = new Date();
+      const formatted = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("last-updated").textContent = `Last updated: ${formatted}`;
+
+      renderChart(rows);
+    } catch (e) {
+      document.getElementById("loading").style.display = "none";
+      const err = document.getElementById("error");
+      err.style.display = "block";
+      err.textContent = "Could not load data: " + e.message;
+    }
+  }
+
+  function renderChart(rows) {
+    const values = rows.map(r => parseFloat(r[1]) || 0);
+    const maxVal = Math.max(...values);
+    const BAR_MAX_HEIGHT = 240;
+
+    const chart = document.getElementById("chart");
+    chart.innerHTML = "";
+
+    rows.forEach((row, i) => {
+      const name = row[0];
+      const val = parseFloat(row[1]) || 0;
+      const barHeight = maxVal > 0 ? Math.max(4, (val / maxVal) * BAR_MAX_HEIGHT) : 4;
+      const imgSrc = CASE_IMAGES[name] || "";
+
+      const col = document.createElement("div");
+      col.className = "bar-col";
+
+      // Value label
+      const valLabel = document.createElement("div");
+      valLabel.className = "bar-value";
+      valLabel.textContent = Math.round(val).toLocaleString();
+
+      // Image above bar
+      const imgWrap = document.createElement("div");
+      imgWrap.className = "bar-img-wrap";
+      if (imgSrc) {
+        const img = document.createElement("img");
+        img.src = imgSrc;
+        img.alt = name;
+        imgWrap.appendChild(img);
+      }
+
+      // Bar
+      const barOuter = document.createElement("div");
+      barOuter.className = "bar-outer";
+      barOuter.style.height = barHeight + "px";
+      barOuter.style.width = "100%";
+
+      const barFill = document.createElement("div");
+      barFill.className = "bar-fill" + (COLORS[i % COLORS.length] === "blue" ? " blue" : "");
+      barFill.style.height = "100%";
+      barOuter.appendChild(barFill);
+
+      // Label
+      const labelWrap = document.createElement("div");
+      labelWrap.className = "bar-label-wrap";
+      const label = document.createElement("div");
+      label.className = "bar-label";
+      label.textContent = name;
+      labelWrap.appendChild(label);
+
+      col.appendChild(valLabel);
+      col.appendChild(imgWrap);
+      col.appendChild(barOuter);
+      col.appendChild(labelWrap);
+      chart.appendChild(col);
+    });
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("chart-container").style.display = "block";
+  }
+
+  loadData();
+</script>
+</body>
+</html>
