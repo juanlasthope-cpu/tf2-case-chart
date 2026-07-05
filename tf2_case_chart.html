@@ -128,7 +128,7 @@
   }
 
   .bar-label {
-    font-size: 10px;
+    font-size: 9px;
     color: #7a7060;
     line-height: 1.2;
     letter-spacing: 0.02em;
@@ -137,7 +137,7 @@
     top: 0;
     left: 50%;
     transform-origin: top left;
-    transform: rotate(45deg) translateX(-14px);
+    transform: rotate(-45deg) translateX(-100%);
   }
 
   .baseline {
@@ -246,7 +246,7 @@
     const chart = document.getElementById("chart");
     chart.innerHTML = "";
 
-    rows.forEach((row, i) => {
+    rows.slice().reverse().forEach((row, i) => {
       const name = row[0];
       const val = parseFloat(row[1]) || 0;
       const barHeight = maxVal > 0 ? Math.max(4, (val / maxVal) * BAR_MAX_HEIGHT) : 4;
