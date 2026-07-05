@@ -158,7 +158,7 @@
 <body>
 
 <h1>Cases Unboxed Last Month</h1>
-<p class="subtitle" id="last-updated">Loading...</p>
+
 
 <div id="loading">Loading data...</div>
 <div id="chart-container" style="display:none">
@@ -227,7 +227,6 @@
 
       const now = new Date();
       const formatted = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-      document.getElementById("last-updated").textContent = `Last updated: ${formatted}`;
 
       renderChart(rows);
     } catch (e) {
