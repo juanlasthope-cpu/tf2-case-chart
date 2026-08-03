@@ -160,7 +160,7 @@
     color: #7a7060;
     font-size: 14px;
     font-family: 'Inter', sans-serif;
-    font-style: italic;
+    font-style: normal;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -274,6 +274,48 @@
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
+  /* Feedback form */
+  .feedback-form { display: flex; flex-direction: column; gap: 12px; }
+  .feedback-form input,
+  .feedback-form textarea {
+    background: #1a1a1a;
+    border: 1px solid #3a3530;
+    border-radius: 4px;
+    color: #e8e0d0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    width: 100%;
+    resize: vertical;
+  }
+  .feedback-form input:focus,
+  .feedback-form textarea:focus {
+    outline: none;
+    border-color: #7a7060;
+  }
+  .feedback-form button[type="submit"] {
+    background: #5c1f1f;
+    border: none;
+    border-radius: 4px;
+    color: #c8b89a;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 10px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .feedback-form button[type="submit"]:hover { background: #8b3a3a; }
+  .feedback-success {
+    color: #7ab87a;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 0;
+    display: none;
+  }
+
   body { position: relative; }
   .error {
     color: #8b3a3a;
@@ -299,6 +341,7 @@
     <div class="modal-tabs">
       <button class="modal-tab active" onclick="switchTab('basic', this)">Overview</button>
       <button class="modal-tab" onclick="switchTab('detail', this)">Detailed Explanation</button>
+      <button class="modal-tab" onclick="switchTab('feedback', this)">Feedback</button>
     </div>
     <div class="modal-body">
       <div class="tab-content active" id="tab-basic">
@@ -314,6 +357,15 @@
         <p>Another limitation is the utilization of tradeups in the community. Some cases have very little unbox activity and instead are largely dominated by tradeups. It is sometimes difficult to isolate which items are being utilized in tradeups which heavily skews the unboxing numbers. To compensate for this, only data from mercenary grade items are being used as any higher tiers are likely affected by tradeups which have an equal probability of being any item from a given higher tier. However, many mercenary grade items are being used as trade up fodder and must therefore be excluded from the data. To determine which data should be included, I excluded the mercenary grade items that are or are around the cheapest available for that case and tier which are the items likely far more used in tradeups. I then crossreferenced this with the change in number in existence of mercenary grade items in each case to see if my assumptions on which items were being utilized for trade ups were correct. This was largely the case which supports that many cases have a thriving community of people who utilize trade ups. This is particularly true for older and more expensive cases and for cases with a particularly desirable item as expected.</p>
         <br>
         <p>A final limitation occurs with war paint and decorated weapon collections. The <a href="http://backpack.tf" target="_blank">backpack.tf</a> data on items in these cases are hard to parse and are prone to some level of corruption. Using some additional statistics and some careful parsing, we are able to make rougher estimates at the unboxing numbers of these cases, but they are less accurate than for the normal item collections.</p>
+      </div>
+      <div class="tab-content" id="tab-feedback">
+        <p style="margin-bottom:16px;color:#7a7060;font-size:12px;">Found a bug or have a suggestion? Send it here.</p>
+        <form class="feedback-form" id="feedbackForm">
+          <input type="email" name="email" placeholder="Your email (optional)" />
+          <textarea name="message" placeholder="Your message..." rows="5" required></textarea>
+          <button type="submit">Send</button>
+        </form>
+        <div class="feedback-success" id="feedbackSuccess">✓ Message sent — thanks for the feedback!</div>
       </div>
     </div>
   </div>
@@ -336,6 +388,25 @@
     document.getElementById('tab-' + tabId).classList.add('active');
     btn.classList.add('active');
   }
+
+  document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const res = await fetch('https://formspree.io/f/xojggrwb', {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('feedbackSuccess').style.display = 'block';
+      }
+    } catch(err) {
+      alert('Something went wrong, please try again.');
+    }
+  });
 
   // -------------------------------------------------------
   // CONFIGURATION
