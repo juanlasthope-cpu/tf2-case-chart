@@ -147,6 +147,134 @@
     margin-top: 4px;
   }
 
+  /* Info button */
+  .info-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #7a7060;
+    background: transparent;
+    color: #7a7060;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+
+  .info-btn:hover {
+    border-color: #c8b89a;
+    color: #c8b89a;
+    transform: scale(1.1);
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: #242424;
+    border: 1px solid #3a3530;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 620px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #3a3530;
+  }
+
+  .modal-header h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #c8b89a;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: #7a7060;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .modal-close:hover { color: #c8b89a; }
+
+  .modal-tabs {
+    display: flex;
+    border-bottom: 1px solid #3a3530;
+  }
+
+  .modal-tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    color: #7a7060;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .modal-tab.active {
+    color: #c8b89a;
+    border-bottom-color: #c8b89a;
+  }
+
+  .modal-tab:hover { color: #c8b89a; }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #c8b89a;
+  }
+
+  .modal-body a {
+    color: #8b9ec8;
+    text-decoration: underline;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  body { position: relative; }
   .error {
     color: #8b3a3a;
     font-size: 13px;
@@ -157,7 +285,39 @@
 </head>
 <body>
 
+<button class="info-btn" onclick="document.getElementById('infoModal').classList.add('active')">i</button>
+
 <h1>Cases Unboxed Last Month</h1>
+
+<!-- Info Modal -->
+<div class="modal-overlay" id="infoModal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Methodology</h2>
+      <button class="modal-close" onclick="document.getElementById('infoModal').classList.remove('active')">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('basic', this)">Overview</button>
+      <button class="modal-tab" onclick="switchTab('detail', this)">Detailed Explanation</button>
+    </div>
+    <div class="modal-body">
+      <div class="tab-content active" id="tab-basic">
+        <p>To find this data, I used very similar logic to the <a href="https://csgocasetracker.com/monthly" target="_blank">CS2 case tracker website</a> and was inspired by their design. I used the public data from <a href="http://backpack.tf" target="_blank">backpack.tf</a> of the number of items in existence for specific items and used their known odds to estimate how many cases have been unboxed. I took the change in the amount in existence over the past month to be the amount unboxed and divided by the odds to unbox that item to find the amount of cases opened over the past month.</p>
+        <br>
+        <p>For instance, if there were 100 of an item with a 0.072 unbox rate unboxed within the past month, we may estimate there were around 100/0.072=1389 cases unboxed last month. I then averaged that number with other reliable data from items in the case to refine my estimate.</p>
+        <br>
+        <p>There are some issues with this algorithm that leads to imprecise numbers, but the general trends in unboxing numbers should be present. A more detailed explanation of this process including its severe limitations can be found in the other section.</p>
+      </div>
+      <div class="tab-content" id="tab-detail">
+        <p>There are several key severe limitations of this method which lead these estimates to likely be wildly inaccurate. The main limitation is that this uses exclusively <a href="http://backpack.tf" target="_blank">backpack.tf</a> data which I believe to only include the backpacks of users of the site which is an incomplete data pool. The extent to which this data set is incomplete can only be speculated at. One seemingly somewhat reliable data point is that in the first month of the summer 2025 case existing, it was unboxed around 550,000 times. Over this time span using my program we would estimate that this case was unboxed around 137,500 cases so we are only accounting for around 25% of the unboxings at least for newer cases. Our data may get more reliable for more expensive cases that casual players who do not utilize <a href="http://backpack.tf" target="_blank">backpack.tf</a> are less likely to open, but this is just speculation. Further, one argument to the defense of my program is that in some particular cases like the older and more expensive cases of the quarantined and classified collections, we see that most of the unboxed items are used directly in trade ups. It is less likely that these cases are being casually opened and therefore it is more likely that these items are being reported to <a href="http://backpack.tf" target="_blank">backpack.tf</a>. More on tradeups below. Regardless, it may be prudent to multiply the values seen on my website by around 4 to have a much better estimate of the true unbox numbers.</p>
+        <br>
+        <p>Another limitation is the utilization of tradeups in the community. Some cases have very little unbox activity and instead are largely dominated by tradeups. It is sometimes difficult to isolate which items are being utilized in tradeups which heavily skews the unboxing numbers. To compensate for this, only data from mercenary grade items are being used as any higher tiers are likely affected by tradeups which have an equal probability of being any item from a given higher tier. However, many mercenary grade items are being used as trade up fodder and must therefore be excluded from the data. To determine which data should be included, I excluded the mercenary grade items that are or are around the cheapest available for that case and tier which are the items likely far more used in tradeups. I then crossreferenced this with the change in number in existence of mercenary grade items in each case to see if my assumptions on which items were being utilized for trade ups were correct. This was largely the case which supports that many cases have a thriving community of people who utilize trade ups. This is particularly true for older and more expensive cases and for cases with a particularly desirable item as expected.</p>
+        <br>
+        <p>A final limitation occurs with war paint and decorated weapon collections. The <a href="http://backpack.tf" target="_blank">backpack.tf</a> data on items in these cases are hard to parse and are prone to some level of corruption. Using some additional statistics and some careful parsing, we are able to make rougher estimates at the unboxing numbers of these cases, but they are less accurate than for the normal item collections.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <div id="loading">Loading data...</div>
@@ -170,6 +330,13 @@
 <div id="error" class="error" style="display:none"></div>
 
 <script>
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
   // -------------------------------------------------------
   // CONFIGURATION
   // -------------------------------------------------------
