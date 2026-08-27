@@ -175,6 +175,11 @@
     position: relative;
     flex-shrink: 1;
     margin-top: 14px;
+    visibility: visible;
+  }
+
+  .bar-label-wrap.hidden {
+    visibility: hidden;
   }
 
   .bar-label {
@@ -533,7 +538,7 @@
     const btn = document.getElementById('toggleLabels');
     btn.textContent = showLabels ? 'Labels: On' : 'Labels: Off';
     btn.classList.toggle('active', showLabels);
-    document.querySelectorAll('.bar-label-wrap').forEach(el => el.style.display = showLabels ? '' : 'none');
+    document.querySelectorAll('.bar-label-wrap').forEach(el => el.classList.toggle('hidden', !showLabels));
   }
 
   // Steam market cache
