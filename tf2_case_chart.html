@@ -15,6 +15,7 @@
     color: #e8e0d0;
     padding: 32px 24px 48px;
     min-height: 100vh;
+    position: relative;
   }
 
   h1 {
@@ -24,17 +25,50 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #c8b89a;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     text-align: center;
   }
 
-  .subtitle {
-    font-size: 13px;
+  .total-line {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
     color: #7a7060;
-    margin-bottom: 40px;
-    letter-spacing: 0.03em;
     text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
   }
+
+  .total-line span {
+    color: #c8b89a;
+    font-weight: 700;
+  }
+
+  .toggles {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .toggle-btn {
+    background: #242424;
+    border: 1px solid #3a3530;
+    border-radius: 4px;
+    color: #7a7060;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    padding: 5px 10px;
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    border-color: #c8b89a;
+    color: #c8b89a;
+  }
+
+  .toggle-btn:hover { border-color: #7a7060; color: #c8b89a; }
 
   #loading {
     color: #7a7060;
@@ -69,6 +103,8 @@
     max-width: 28px;
     min-width: 0;
     flex-shrink: 1;
+    cursor: pointer;
+    position: relative;
   }
 
   .bar-value {
@@ -97,6 +133,7 @@
     max-height: 32px;
     object-fit: contain;
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+    transition: filter 0.2s;
   }
 
   .bar-outer {
@@ -112,10 +149,23 @@
     height: 100%;
     border-radius: 2px 2px 0 0;
     background: linear-gradient(180deg, #8b3a3a 0%, #5c1f1f 100%);
+    transition: background 0.2s;
   }
 
   .bar-fill.blue {
     background: linear-gradient(180deg, #3a5c8b 0%, #1f3a5c 100%);
+  }
+
+  .bar-col:hover .bar-fill {
+    background: linear-gradient(180deg, #c85a5a 0%, #8b3a3a 100%);
+  }
+
+  .bar-col:hover .bar-fill.blue {
+    background: linear-gradient(180deg, #5a8bc8 0%, #3a5c8b 100%);
+  }
+
+  .bar-col:hover .bar-img-wrap img {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)) brightness(1.2);
   }
 
   .bar-label-wrap {
@@ -147,6 +197,43 @@
     margin-top: 4px;
   }
 
+  /* Hover popup */
+  .hover-popup {
+    display: none;
+    position: fixed;
+    background: #242424;
+    border: 1px solid #3a3530;
+    border-radius: 6px;
+    padding: 12px 14px;
+    z-index: 50;
+    min-width: 180px;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+
+  .hover-popup.visible { display: block; }
+
+  .popup-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #c8b89a;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .popup-row {
+    font-size: 11px;
+    color: #7a7060;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .popup-row span { color: #c8b89a; }
+  .popup-loading { font-size: 11px; color: #7a7060; }
+
   /* Info button */
   .info-btn {
     position: absolute;
@@ -175,7 +262,7 @@
     transform: scale(1.1);
   }
 
-  /* Modal overlay */
+  /* Modal */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -186,9 +273,7 @@
     justify-content: center;
   }
 
-  .modal-overlay.active {
-    display: flex;
-  }
+  .modal-overlay.active { display: flex; }
 
   .modal {
     background: #242424;
@@ -250,11 +335,7 @@
     font-family: 'Inter', sans-serif;
   }
 
-  .modal-tab.active {
-    color: #c8b89a;
-    border-bottom-color: #c8b89a;
-  }
-
+  .modal-tab.active { color: #c8b89a; border-bottom-color: #c8b89a; }
   .modal-tab:hover { color: #c8b89a; }
 
   .modal-body {
@@ -266,15 +347,11 @@
     color: #c8b89a;
   }
 
-  .modal-body a {
-    color: #8b9ec8;
-    text-decoration: underline;
-  }
+  .modal-body a { color: #8b9ec8; text-decoration: underline; }
 
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
-  /* Feedback form */
   .feedback-form { display: flex; flex-direction: column; gap: 12px; }
   .feedback-form input,
   .feedback-form textarea {
@@ -289,10 +366,7 @@
     resize: vertical;
   }
   .feedback-form input:focus,
-  .feedback-form textarea:focus {
-    outline: none;
-    border-color: #7a7060;
-  }
+  .feedback-form textarea:focus { outline: none; border-color: #7a7060; }
   .feedback-form button[type="submit"] {
     background: #5c1f1f;
     border: none;
@@ -308,21 +382,9 @@
     transition: background 0.2s;
   }
   .feedback-form button[type="submit"]:hover { background: #8b3a3a; }
-  .feedback-success {
-    color: #7ab87a;
-    font-size: 13px;
-    text-align: center;
-    padding: 20px 0;
-    display: none;
-  }
+  .feedback-success { color: #7ab87a; font-size: 13px; text-align: center; padding: 20px 0; display: none; }
 
-  body { position: relative; }
-  .error {
-    color: #8b3a3a;
-    font-size: 13px;
-    text-align: center;
-    margin-top: 60px;
-  }
+  .error { color: #8b3a3a; font-size: 13px; text-align: center; margin-top: 60px; }
 </style>
 </head>
 <body>
@@ -330,6 +392,18 @@
 <button class="info-btn" onclick="document.getElementById('infoModal').classList.add('active')">i</button>
 
 <h1>Cases Unboxed Last Month</h1>
+<div class="total-line" id="totalLine" style="display:none">Total unboxed this month: <span id="totalVal">—</span></div>
+
+<div class="toggles">
+  <button class="toggle-btn active" id="toggleNumbers" onclick="toggleNumbers()">Numbers: On</button>
+  <button class="toggle-btn active" id="toggleLabels" onclick="toggleLabels()">Labels: On</button>
+</div>
+
+<!-- Hover popup -->
+<div class="hover-popup" id="hoverPopup">
+  <div class="popup-name" id="popupName"></div>
+  <div id="popupContent"><div class="popup-loading">Loading market data...</div></div>
+</div>
 
 <!-- Info Modal -->
 <div class="modal-overlay" id="infoModal" onclick="if(event.target===this)this.classList.remove('active')">
@@ -371,7 +445,6 @@
   </div>
 </div>
 
-
 <div id="loading">Loading data...</div>
 <div id="chart-container" style="display:none">
   <div class="chart-container-inner">
@@ -391,21 +464,11 @@
 
   document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
+    const data = new FormData(e.target);
     try {
-      const res = await fetch('https://formspree.io/f/xojggrwb', {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      });
-      if (res.ok) {
-        form.style.display = 'none';
-        document.getElementById('feedbackSuccess').style.display = 'block';
-      }
-    } catch(err) {
-      alert('Something went wrong, please try again.');
-    }
+      const res = await fetch('https://formspree.io/f/xojggrwb', { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
+      if (res.ok) { e.target.style.display = 'none'; document.getElementById('feedbackSuccess').style.display = 'block'; }
+    } catch { alert('Something went wrong, please try again.'); }
   });
 
   // -------------------------------------------------------
@@ -414,7 +477,6 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPYhMKeg6Abyva-EmtkHT-xwrRxmfwAbHpaKiBvAi7dRJuQI9jPES7PkEKGI_3DwLP-nihP4KRxS9Q/pub?gid=1949250487&single=true&output=csv";
   // -------------------------------------------------------
 
-  // Case image URLs from TF2 wiki (add/edit as needed)
   const CASE_IMAGES = {
     "Spectral Stash Case": "Spectral_Stash_Case.png",
     "Summer 2025 Cosmetic Case": "Summer_2025_Cosmetic_Case.png",
@@ -452,8 +514,79 @@
     "Gun Mettle Cosmetic Case": "Gun_Mettle_Cosmetic_Case.png",
   };
 
-  // Alternate between red and blue bars
   const COLORS = ["red", "blue", "red", "blue", "red", "blue"];
+
+  // Toggle state
+  let showNumbers = true;
+  let showLabels = true;
+
+  function toggleNumbers() {
+    showNumbers = !showNumbers;
+    const btn = document.getElementById('toggleNumbers');
+    btn.textContent = showNumbers ? 'Numbers: On' : 'Numbers: Off';
+    btn.classList.toggle('active', showNumbers);
+    document.querySelectorAll('.bar-value').forEach(el => el.style.display = showNumbers ? '' : 'none');
+  }
+
+  function toggleLabels() {
+    showLabels = !showLabels;
+    const btn = document.getElementById('toggleLabels');
+    btn.textContent = showLabels ? 'Labels: On' : 'Labels: Off';
+    btn.classList.toggle('active', showLabels);
+    document.querySelectorAll('.bar-label-wrap').forEach(el => el.style.display = showLabels ? '' : 'none');
+  }
+
+  // Steam market cache
+  const marketCache = {};
+
+  async function fetchMarketData(caseName) {
+    if (marketCache[caseName]) return marketCache[caseName];
+    try {
+      const encoded = encodeURIComponent(caseName);
+      const url = `https://steamcommunity.com/market/priceoverview/?appid=440&currency=1&market_hash_name=${encoded}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      const data = {
+        price: json.lowest_price || json.median_price || 'N/A',
+        quantity: json.volume || 'N/A'
+      };
+      marketCache[caseName] = data;
+      return data;
+    } catch {
+      return { price: 'N/A', quantity: 'N/A' };
+    }
+  }
+
+  // Hover popup
+  const popup = document.getElementById('hoverPopup');
+  let popupTimeout;
+
+  function showPopup(e, name, val) {
+    document.getElementById('popupName').textContent = name;
+    document.getElementById('popupContent').innerHTML = `
+      <div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>
+      <div class="popup-loading">Loading market data...</div>
+    `;
+    popup.classList.add('visible');
+    movePopup(e);
+
+    fetchMarketData(name).then(data => {
+      document.getElementById('popupContent').innerHTML = `
+        <div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>
+        <div class="popup-row">Market price: <span>${data.price}</span></div>
+        <div class="popup-row">Market quantity: <span>${data.quantity}</span></div>
+      `;
+    });
+  }
+
+  function movePopup(e) {
+    const x = e.clientX + 14;
+    const y = e.clientY - 10;
+    popup.style.left = Math.min(x, window.innerWidth - popup.offsetWidth - 10) + 'px';
+    popup.style.top = Math.min(y, window.innerHeight - popup.offsetHeight - 10) + 'px';
+  }
+
+  function hidePopup() { popup.classList.remove('visible'); }
 
   async function loadData() {
     try {
@@ -462,10 +595,6 @@
       const text = await res.text();
       const rows = text.trim().split("\n").slice(1).map(line => line.split(",")).filter(r => r[0] && r[1]);
       if (!rows.length) throw new Error("No data found.");
-
-      const now = new Date();
-      const formatted = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
       renderChart(rows);
     } catch (e) {
       document.getElementById("loading").style.display = "none";
@@ -478,7 +607,12 @@
   function renderChart(rows) {
     const values = rows.map(r => parseFloat(r[1]) || 0);
     const maxVal = Math.max(...values);
+    const total = values.reduce((a, b) => a + b, 0);
     const BAR_MAX_HEIGHT = 240;
+
+    // Show total
+    document.getElementById('totalVal').textContent = Math.round(total).toLocaleString();
+    document.getElementById('totalLine').style.display = 'block';
 
     const chart = document.getElementById("chart");
     chart.innerHTML = "";
@@ -491,13 +625,14 @@
 
       const col = document.createElement("div");
       col.className = "bar-col";
+      col.addEventListener('mouseenter', e => showPopup(e, name, val));
+      col.addEventListener('mousemove', movePopup);
+      col.addEventListener('mouseleave', hidePopup);
 
-      // Value label
       const valLabel = document.createElement("div");
       valLabel.className = "bar-value";
       valLabel.textContent = Math.round(val).toLocaleString();
 
-      // Image above bar
       const imgWrap = document.createElement("div");
       imgWrap.className = "bar-img-wrap";
       if (imgSrc) {
@@ -507,7 +642,6 @@
         imgWrap.appendChild(img);
       }
 
-      // Bar
       const barOuter = document.createElement("div");
       barOuter.className = "bar-outer";
       barOuter.style.height = barHeight + "px";
@@ -518,7 +652,6 @@
       barFill.style.height = "100%";
       barOuter.appendChild(barFill);
 
-      // Label
       const labelWrap = document.createElement("div");
       labelWrap.className = "bar-label-wrap";
       const label = document.createElement("div");
