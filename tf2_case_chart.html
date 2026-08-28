@@ -171,17 +171,18 @@
     overflow: visible;
     display: flex;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-left: 50%;
   }
 
   .bar-label {
     font-size: 9px;
     color: #7a7060;
     white-space: nowrap;
-    transform-origin: top center;
+    transform-origin: top left;
     transform: rotate(45deg);
     transition: opacity 0.2s;
-    margin-top: 4px;
+    margin-top: 20px;
   }
 
   .bar-label.hidden { opacity: 0; }
