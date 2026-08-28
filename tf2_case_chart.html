@@ -9,17 +9,13 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { overflow-x: clip; }
-
   body {
     background: #1a1a1a;
     font-family: 'Inter', sans-serif;
     color: #e8e0d0;
-    padding: 32px 24px 150px;
+    padding: 32px 24px 48px;
     min-height: 100vh;
     position: relative;
-    max-width: 100%;
-
   }
 
   h1 {
@@ -43,10 +39,7 @@
     letter-spacing: 0.04em;
   }
 
-  .total-line span {
-    color: #c8b89a;
-    font-weight: 700;
-  }
+  .total-line span { color: #c8b89a; font-weight: 700; }
 
   .toggles {
     position: absolute;
@@ -70,71 +63,27 @@
     transition: all 0.2s;
   }
 
-  .toggle-btn.active {
-    border-color: #c8b89a;
-    color: #c8b89a;
-  }
-
+  .toggle-btn.active { border-color: #c8b89a; color: #c8b89a; }
   .toggle-btn:hover { border-color: #7a7060; color: #c8b89a; }
 
-  #loading {
-    color: #7a7060;
-    font-size: 14px;
-    margin-top: 60px;
-    text-align: center;
-  }
+  #loading { color: #7a7060; font-size: 14px; margin-top: 60px; text-align: center; }
 
-  .chart-container-inner {
+  /* Chart is a simple table-like layout: bars on top, baseline, labels below */
+  .chart-outer {
     width: 100%;
-    overflow-x: hidden;
-    padding-bottom: 8px;
+    margin-top: 16px;
   }
 
-  .chart-wrap {
+  /* Bar area */
+  .bars-row {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-evenly;
-    gap: 4px;
     width: 100%;
-    padding: 60px 16px 0 16px;
-    height: 440px;
+    height: 320px;
+    padding: 60px 8px 0 8px;
   }
-
-  .labels-wrap {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    gap: 4px;
-    width: 100%;
-    padding: 6px 16px 0 16px;
-    height: 130px;
-    overflow: visible;
-  }
-
-  .label-col {
-    flex: 1;
-    max-width: 28px;
-    min-width: 0;
-    flex-shrink: 1;
-    position: relative;
-    height: 110px;
-  }
-
-  .bar-label {
-    font-size: 7px;
-    color: #7a7060;
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform-origin: top left;
-    transform: rotate(-45deg) translateX(-50%);
-  }
-
-  .bar-label.hidden { visibility: hidden; }
 
   .bar-col {
     display: flex;
@@ -142,11 +91,10 @@
     align-items: center;
     justify-content: flex-end;
     flex: 1;
-    max-width: 28px;
+    max-width: 32px;
     min-width: 0;
-    flex-shrink: 1;
     cursor: pointer;
-    position: relative;
+    height: 100%;
   }
 
   .bar-value {
@@ -154,36 +102,38 @@
     font-size: 7px;
     font-weight: 700;
     color: #c8b89a;
-    letter-spacing: 0.02em;
     text-align: center;
     margin-bottom: 2px;
     white-space: nowrap;
   }
 
   .bar-img-wrap {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 1;
     margin-bottom: 3px;
+    flex-shrink: 0;
   }
 
   .bar-img-wrap img {
-    max-width: 32px;
-    max-height: 32px;
+    max-width: 28px;
+    max-height: 28px;
     object-fit: contain;
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
     transition: filter 0.2s;
   }
 
+  .bar-col:hover .bar-img-wrap img {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)) brightness(1.2);
+  }
+
   .bar-outer {
     width: 14px;
-    position: relative;
     border-radius: 2px 2px 0 0;
     min-height: 2px;
-    flex-shrink: 1;
+    flex-shrink: 0;
   }
 
   .bar-fill {
@@ -194,28 +144,45 @@
     transition: background 0.2s;
   }
 
-  .bar-fill.blue {
-    background: linear-gradient(180deg, #3a5c8b 0%, #1f3a5c 100%);
-  }
+  .bar-fill.blue { background: linear-gradient(180deg, #3a5c8b 0%, #1f3a5c 100%); }
+  .bar-col:hover .bar-fill { background: linear-gradient(180deg, #c85a5a 0%, #8b3a3a 100%); }
+  .bar-col:hover .bar-fill.blue { background: linear-gradient(180deg, #5a8bc8 0%, #3a5c8b 100%); }
 
-  .bar-col:hover .bar-fill {
-    background: linear-gradient(180deg, #c85a5a 0%, #8b3a3a 100%);
-  }
+  /* Baseline */
+  .baseline { width: 100%; height: 1px; background: #3a3530; }
 
-  .bar-col:hover .bar-fill.blue {
-    background: linear-gradient(180deg, #5a8bc8 0%, #3a5c8b 100%);
-  }
-
-  .bar-col:hover .bar-img-wrap img {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)) brightness(1.2);
-  }
-
-  .baseline {
+  /* Labels row - fixed height, labels rotate within their own column */
+  .labels-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     width: 100%;
-    height: 1px;
-    background: #3a3530;
-    margin-top: 4px;
+    height: 120px;
+    padding: 0 8px;
   }
+
+  .label-col {
+    flex: 1;
+    max-width: 32px;
+    min-width: 0;
+    height: 120px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .bar-label {
+    font-size: 9px;
+    color: #7a7060;
+    white-space: nowrap;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform-origin: top left;
+    transform: rotate(-45deg) translateX(-50%);
+    transition: opacity 0.2s;
+  }
+
+  .bar-label.hidden { opacity: 0; }
 
   /* Hover popup */
   .hover-popup {
@@ -232,27 +199,9 @@
   }
 
   .hover-popup.visible { display: block; }
-
-  .popup-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #c8b89a;
-    letter-spacing: 0.04em;
-    margin-bottom: 8px;
-  }
-
-  .popup-row {
-    font-size: 11px;
-    color: #7a7060;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
+  .popup-name { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; color: #c8b89a; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .popup-row { font-size: 11px; color: #7a7060; margin-bottom: 4px; display: flex; justify-content: space-between; gap: 12px; }
   .popup-row span { color: #c8b89a; }
-  .popup-loading { font-size: 11px; color: #7a7060; }
 
   /* Info button */
   .info-btn {
@@ -276,172 +225,39 @@
     z-index: 10;
   }
 
-  .info-btn:hover {
-    border-color: #c8b89a;
-    color: #c8b89a;
-    transform: scale(1.1);
-  }
+  .info-btn:hover { border-color: #c8b89a; color: #c8b89a; transform: scale(1.1); }
 
   /* Modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.active { display: flex; }
-
-  .modal {
-    background: #242424;
-    border: 1px solid #3a3530;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 620px;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid #3a3530;
-  }
-
-  .modal-header h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #c8b89a;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    color: #7a7060;
-    font-size: 20px;
-    cursor: pointer;
-    line-height: 1;
-    padding: 0;
-  }
-
+  .modal { background: #242424; border: 1px solid #3a3530; border-radius: 8px; width: 90%; max-width: 620px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #3a3530; }
+  .modal-header h2 { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #c8b89a; letter-spacing: 0.06em; text-transform: uppercase; }
+  .modal-close { background: none; border: none; color: #7a7060; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
   .modal-close:hover { color: #c8b89a; }
-
-  .modal-tabs {
-    display: flex;
-    border-bottom: 1px solid #3a3530;
-  }
-
-  .modal-tab {
-    padding: 10px 20px;
-    font-size: 13px;
-    color: #7a7060;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    font-family: 'Inter', sans-serif;
-  }
-
+  .modal-tabs { display: flex; border-bottom: 1px solid #3a3530; }
+  .modal-tab { padding: 10px 20px; font-size: 13px; color: #7a7060; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Inter', sans-serif; }
   .modal-tab.active { color: #c8b89a; border-bottom-color: #c8b89a; }
   .modal-tab:hover { color: #c8b89a; }
-
-  .modal-body {
-    padding: 20px;
-    overflow-y: auto;
-    flex: 1;
-    font-size: 13px;
-    line-height: 1.7;
-    color: #c8b89a;
-  }
-
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; font-size: 13px; line-height: 1.7; color: #c8b89a; }
   .modal-body a { color: #8b9ec8; text-decoration: underline; }
-
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-
   .feedback-form { display: flex; flex-direction: column; gap: 12px; }
-  .feedback-form input,
-  .feedback-form textarea {
-    background: #1a1a1a;
-    border: 1px solid #3a3530;
-    border-radius: 4px;
-    color: #e8e0d0;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    padding: 10px 12px;
-    width: 100%;
-    resize: vertical;
-  }
-  .feedback-form input:focus,
-  .feedback-form textarea:focus { outline: none; border-color: #7a7060; }
-  .feedback-form button[type="submit"] {
-    background: #5c1f1f;
-    border: none;
-    border-radius: 4px;
-    color: #c8b89a;
-    cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    padding: 10px;
-    text-transform: uppercase;
-    transition: background 0.2s;
-  }
+  .feedback-form input, .feedback-form textarea { background: #1a1a1a; border: 1px solid #3a3530; border-radius: 4px; color: #e8e0d0; font-family: 'Inter', sans-serif; font-size: 13px; padding: 10px 12px; width: 100%; resize: vertical; }
+  .feedback-form input:focus, .feedback-form textarea:focus { outline: none; border-color: #7a7060; }
+  .feedback-form button[type="submit"] { background: #5c1f1f; border: none; border-radius: 4px; color: #c8b89a; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.06em; padding: 10px; text-transform: uppercase; transition: background 0.2s; }
   .feedback-form button[type="submit"]:hover { background: #8b3a3a; }
   .feedback-success { color: #7ab87a; font-size: 13px; text-align: center; padding: 20px 0; display: none; }
-
   .error { color: #8b3a3a; font-size: 13px; text-align: center; margin-top: 60px; }
 
   @media (max-width: 600px) {
-    body { padding: 20px 12px 32px; }
+    body { padding: 20px 8px 48px; }
     h1 { font-size: 18px; }
-    .total-line { font-size: 12px; }
     .info-btn { top: 16px; right: 16px; width: 24px; height: 24px; font-size: 12px; }
     .toggles { top: 48px; right: 16px; }
-    .chart-container-inner { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
-    .chart-wrap { justify-content: flex-start; min-width: 900px; padding: 60px 80px 130px 100px; height: 360px; }
-    .bar-col { min-width: 22px; max-width: 22px; }
-  }
-    body { padding: 20px 12px 32px; }
-
-    h1 { font-size: 18px; }
-
-    .total-line { font-size: 12px; }
-
-    .info-btn { top: 16px; right: 16px; width: 24px; height: 24px; font-size: 12px; }
-
-    .toggles { top: 48px; right: 16px; }
-
-    .chart-container-inner {
-      overflow-x: scroll;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .chart-wrap {
-      justify-content: flex-start;
-      min-width: 900px;
-      padding: 60px 80px 130px 100px;
-      height: 360px;
-    }
-
-    .bar-col {
-      min-width: 22px;
-      max-width: 22px;
-    }
+    .bars-row { height: 260px; padding: 40px 4px 0 4px; }
+    .labels-row { padding: 0 4px; }
   }
 </style>
 </head>
@@ -460,7 +276,7 @@
 <!-- Hover popup -->
 <div class="hover-popup" id="hoverPopup">
   <div class="popup-name" id="popupName"></div>
-  <div id="popupContent"><div class="popup-loading">Loading market data...</div></div>
+  <div id="popupContent"></div>
 </div>
 
 <!-- Info Modal -->
@@ -505,10 +321,10 @@
 
 <div id="loading">Loading data...</div>
 <div id="chart-container" style="display:none">
-  <div class="chart-container-inner">
-    <div class="chart-wrap" id="chart"></div>
+  <div class="chart-outer">
+    <div class="bars-row" id="chart"></div>
     <div class="baseline"></div>
-    <div class="labels-wrap" id="labels"></div>
+    <div class="labels-row" id="labels"></div>
   </div>
 </div>
 <div id="error" class="error" style="display:none"></div>
@@ -530,11 +346,7 @@
     } catch { alert('Something went wrong, please try again.'); }
   });
 
-  // -------------------------------------------------------
-  // CONFIGURATION
-  // -------------------------------------------------------
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPYhMKeg6Abyva-EmtkHT-xwrRxmfwAbHpaKiBvAi7dRJuQI9jPES7PkEKGI_3DwLP-nihP4KRxS9Q/pub?gid=1949250487&single=true&output=csv";
-  // -------------------------------------------------------
 
   const CASE_IMAGES = {
     "Spectral Stash Case": "Spectral_Stash_Case.png",
@@ -574,8 +386,6 @@
   };
 
   const COLORS = ["red", "blue", "red", "blue", "red", "blue"];
-
-  // Toggle state
   let showNumbers = true;
   let showLabels = true;
 
@@ -584,7 +394,7 @@
     const btn = document.getElementById('toggleNumbers');
     btn.textContent = showNumbers ? 'Numbers: On' : 'Numbers: Off';
     btn.classList.toggle('active', showNumbers);
-    document.querySelectorAll('.bar-value').forEach(el => el.style.display = showNumbers ? '' : 'none');
+    document.querySelectorAll('.bar-value').forEach(el => el.style.visibility = showNumbers ? 'visible' : 'hidden');
   }
 
   function toggleLabels() {
@@ -595,37 +405,11 @@
     document.querySelectorAll('.bar-label').forEach(el => el.classList.toggle('hidden', !showLabels));
   }
 
-  // Steam market cache
-  const marketCache = {};
-
-  async function fetchMarketData(caseName) {
-    if (marketCache[caseName]) return marketCache[caseName];
-    try {
-      const encoded = encodeURIComponent(caseName);
-      const steamUrl = `https://steamcommunity.com/market/priceoverview/?appid=440&currency=1&market_hash_name=${encoded}`;
-      const proxyUrl = `https://api.codetabs.com/v1/proxy/?quest=${steamUrl}`;
-      const res = await fetch(proxyUrl);
-      const parsed = await res.json();
-      const data = {
-        price: parsed.lowest_price || parsed.median_price || 'N/A',
-        quantity: parsed.volume || 'N/A'
-      };
-      marketCache[caseName] = data;
-      return data;
-    } catch {
-      return { price: 'N/A', quantity: 'N/A' };
-    }
-  }
-
-  // Hover popup
   const popup = document.getElementById('hoverPopup');
-  let popupTimeout;
 
   function showPopup(e, name, val) {
     document.getElementById('popupName').textContent = name;
-    document.getElementById('popupContent').innerHTML = `
-      <div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>
-    `;
+    document.getElementById('popupContent').innerHTML = `<div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>`;
     popup.classList.add('visible');
     movePopup(e);
   }
@@ -659,7 +443,7 @@
     const values = rows.map(r => parseFloat(r[1]) || 0);
     const maxVal = Math.max(...values);
     const total = values.reduce((a, b) => a + b, 0);
-    const BAR_MAX_HEIGHT = 340;
+    const BAR_MAX_HEIGHT = 220;
 
     document.getElementById('totalVal').textContent = Math.round(total).toLocaleString();
     document.getElementById('totalLine').style.display = 'block';
@@ -710,7 +494,7 @@
       col.appendChild(barOuter);
       chart.appendChild(col);
 
-      // Label column (separate row)
+      // Label column
       const labelCol = document.createElement("div");
       labelCol.className = "label-col";
       const label = document.createElement("div");
