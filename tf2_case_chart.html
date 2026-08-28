@@ -254,12 +254,15 @@
   .error { color: #8b3a3a; font-size: 13px; text-align: center; margin-top: 60px; }
 
   @media (max-width: 600px) {
-    body { padding: 20px 8px 48px; }
+    body { padding: 16px 8px 16px; overflow: hidden; }
     h1 { font-size: 18px; }
     .info-btn { top: 16px; right: 16px; width: 24px; height: 24px; font-size: 12px; }
     .toggles { top: 48px; right: 16px; }
-    .bars-row { height: 260px; padding: 40px 4px 0 4px; }
-    .labels-row { padding: 0 4px; }
+    .chart-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .bars-row { height: 220px; padding: 40px 8px 0 33px; min-width: 700px; }
+    .labels-row { min-width: 700px; padding: 0 8px 0 33px; margin-top: 8px; }
+    .bar-col { max-width: 20px; }
+    .label-col { max-width: 20px; }
   }
 </style>
 </head>
