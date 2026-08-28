@@ -575,18 +575,9 @@
     document.getElementById('popupName').textContent = name;
     document.getElementById('popupContent').innerHTML = `
       <div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>
-      <div class="popup-loading">Loading market data...</div>
     `;
     popup.classList.add('visible');
     movePopup(e);
-
-    fetchMarketData(name).then(data => {
-      document.getElementById('popupContent').innerHTML = `
-        <div class="popup-row">Unboxed this month: <span>${Math.round(val).toLocaleString()}</span></div>
-        <div class="popup-row">Market price: <span>${data.price}</span></div>
-        <div class="popup-row">Market quantity: <span>${data.quantity}</span></div>
-      `;
-    });
   }
 
   function movePopup(e) {
