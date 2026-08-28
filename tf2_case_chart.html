@@ -9,7 +9,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { overflow-x: hidden; }
+  html { overflow-x: clip; }
 
   body {
     background: #1a1a1a;
@@ -87,9 +87,8 @@
   .chart-container-inner {
     width: 100%;
     overflow-x: auto;
-
+    overflow-y: visible;
     padding-bottom: 8px;
-
   }
 
   .chart-wrap {
@@ -99,8 +98,8 @@
     justify-content: space-evenly;
     gap: 4px;
     width: 100%;
-    padding: 160px 60px 0 60px;
-    height: 380px;
+    padding: 60px 60px 0 60px;
+    height: 600px;
   }
 
   .bar-col {
