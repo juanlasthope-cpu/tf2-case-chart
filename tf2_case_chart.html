@@ -169,18 +169,19 @@
     height: 120px;
     position: relative;
     overflow: visible;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   .bar-label {
     font-size: 9px;
     color: #7a7060;
     white-space: nowrap;
-    position: absolute;
-    top: 4px;
-    left: 50%;
-    transform-origin: top left;
-    transform: rotate(45deg) translateX(-100%);
+    transform-origin: top center;
+    transform: rotate(45deg);
     transition: opacity 0.2s;
+    margin-top: 4px;
   }
 
   .bar-label.hidden { opacity: 0; }
