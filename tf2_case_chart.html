@@ -61,8 +61,8 @@
     color: #7a7060;
     cursor: pointer;
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    padding: 5px 10px;
+    font-size: 9px;
+    padding: 3px 7px;
     transition: all 0.2s;
   }
 
@@ -400,13 +400,13 @@
 
 <button class="info-btn" onclick="document.getElementById('infoModal').classList.add('active')">i</button>
 
-<h1>Cases Unboxed Last Month</h1>
-<div class="total-line" id="totalLine" style="display:none">Total unboxed this month: <span id="totalVal">—</span></div>
-
 <div class="toggles">
   <button class="toggle-btn active" id="toggleNumbers" onclick="toggleNumbers()">Numbers: On</button>
   <button class="toggle-btn active" id="toggleLabels" onclick="toggleLabels()">Labels: On</button>
 </div>
+
+<h1>Cases Unboxed Last Month</h1>
+<div class="total-line" id="totalLine" style="display:none">Total unboxed this month: <span id="totalVal">—</span></div>
 
 <!-- Hover popup -->
 <div class="hover-popup" id="hoverPopup">
